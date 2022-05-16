@@ -63,3 +63,23 @@ export interface KolSmiTable {
     Dalpha?: number,  // true
     N?:number,
 }
+
+// QS 
+export type QueueingFunc = (params: any) => any;
+
+export interface QueueingTable {
+    lambda?: number,
+    nu?: number,
+    p?:number,
+    po?:number,
+    Lq?:number,
+    L?:number,
+    Wq?:number,
+    W?:number,
+    s?: number
+    k?: number,
+    lambdaE?: number,
+    Pk?: number,
+    ro?: number,
+    tasaUtil?: number
+}
