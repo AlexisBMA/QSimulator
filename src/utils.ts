@@ -21,11 +21,6 @@ export const validateNumeric = (val: string): boolean => {
     return !Number.isNaN(Number(val.trim()))
 };
 
-export const completeParams = (paramsObj: any, method: string): boolean => {
-    const result = METHOD_PARAMS_VALIDATORS[method](paramsObj)
-    console.log("Complete form?", result);
-    return result;
-}
 
 export const safeInteger = (integer: number): boolean => {
     if (integer < 0 || integer + 1 >= Number.MAX_SAFE_INTEGER) {
