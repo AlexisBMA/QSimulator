@@ -17,7 +17,9 @@ export const paramsToIntegers = (params: any): any => {
     return result;
 }
 
-export const validateNumeric = (val: string): boolean => !Number.isNaN(Number(val.trim()));
+export const validateNumeric = (val: string): boolean => {
+    return !Number.isNaN(Number(val.trim()))
+};
 
 export const completeParams = (paramsObj: any, method: string): boolean => {
     const result = METHOD_PARAMS_VALIDATORS[method](paramsObj)
