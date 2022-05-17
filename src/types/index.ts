@@ -65,7 +65,24 @@ export interface KolSmiTable {
 }
 
 // QS 
-export type QueueingFunc = (params: any) => any;
+export interface QueueModelParams {
+    arrivalRate: number,
+    serviceRate: number,
+    numberServers: number,
+    maxUsers?:number,
+    stDev?: number,
+}
+
+export interface QueueModelFormInputs {
+    arrivalRate: string,
+    serviceRate: string,
+    numberServers: string,
+    maxUsers?:string,
+    stDev?: string,
+}
+
+
+export type QueueingFunc = (params: any) => QueueingTable;
 
 export interface QueueingTable {
     lambda?: number,

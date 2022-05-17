@@ -1,12 +1,11 @@
 import React, { ChangeEventHandler, useState, useEffect } from 'react'
 import { Button, TextField, Stack, Select, MenuItem } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select'
-import FormInputsSwitch from './FormInputsSwitch'
-import { METHODS } from '../stats/methods'
-import { validateNumeric, paramsToIntegers, completeParams, isInteger } from '../utils'
-import { RNG } from '../RNGs'
+import { validateNumeric, paramsToIntegers, isInteger } from '../utils'
+import { MODELS } from '../stats/models'
 import { QueueModels } from '../QueueModels'
-import { CongruentialParams } from '../types'
+import { CongruentialParams, QueueModelFormInputs, QueueModelParams } from '../types'
+import { MODEL_PARAMS_CHECKS } from '../stats/models'
 
 interface Props {
 	updateRandoms: (randoms: number[]) => void,
@@ -17,13 +16,11 @@ interface Props {
 
 
 const Form: React.FC<Props> = ({
-	updateRandoms,
 	setError,
-	clearRandoms,
 	updateGlobalState,
 }) => {
 
-	const [model, setModel] = useState<string>(RNG.MidSquares);
+	const [model, setModel] = useState<string>(QueueModels.MM1);
 	const [seed, setSeed] = useState<string>("");
 	const [numberServers, setNumberRandoms] = useState<string>("1");  // number type html inputs hold strings
 	const [arrivalRate, setArrivalRate] = useState<string>("1");
@@ -42,6 +39,14 @@ const Form: React.FC<Props> = ({
 	useEffect(() => {
 		updateGlobalState('model', model);
 	}, [])
+
+	useEffect(() => {          // completeForm updater
+		if (model !== "" && completeParams({numberServers, arrivalRate, serviceRate, maxUsers, stDev}, model)) {
+			setCompleteForm(true);
+		} else {
+			setCompleteForm(false);
+		}
+	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev])
 
 	useEffect(() => {          // completeForm updater
 		if (model !== "" && validateNumeric(arrivalRate) && validateNumeric(serviceRate)) {
@@ -63,19 +68,6 @@ const Form: React.FC<Props> = ({
 		setNeedsStDev(model === QueueModels.MD1 || model === QueueModels.ME1 || model === QueueModels.MG1); 
 
 	}, [model])
-
-	const updateHandler = (event: React.FormEvent<HTMLInputElement>): void => {
-		const target = event.target as HTMLInputElement;
-		//console.log(params);
-		setParams({
-			...params,
-			[target.name]: target.value,
-		});
-	}
-
-	const handleSeedChange = (event: React.ChangeEvent<any>) => {
-		setSeed(event.target.value);
-	}
 
 	const handleMethodChange = (event: SelectChangeEvent) => {
 		setParams({})
@@ -104,13 +96,39 @@ const Form: React.FC<Props> = ({
 			return;
 		};
 
-		if (serviceRate <= arrivalRate) {
+		if (serviceRate < arrivalRate) {
 			setError("For the system to be stable, arrival rate should be less than service rate");
 			console.log("unstable system inputs");
 			return;
 		}
 
+		if (needsKParam && !maxUsers) {
+			setError("Enter parameter k for max number of users in system");
+			console.log("unstable system inputs");
+			return;
+		}
+
+		if (needsKParam && numberServers > maxUsers) {
+			setError("Number of servers must be less than max number of users.");
+			console.log("incorrect MMSK system inputs");
+			return;
+		}
+
+		// TODO checks for General Case
+
 		console.log("Method selected:", model);
+		console.log("arrivalRate", arrivalRate);
+		console.log("serviceRate", serviceRate);
+		console.log("maxUsers", maxUsers);  // empty string = infinity
+		console.log("stDev", stDev);
+
+		if (!(model in MODELS)) {
+			setError("No implementado aún :P");
+			return;	
+		}
+
+
+
 		return;
 		
 	}
@@ -175,42 +193,8 @@ const Form: React.FC<Props> = ({
 }
 
 
-// used for preprocessing of certain models
-export const prepareParams = (model: string, seedVal: number, params: any, n: number) => {
-	if (model === RNG.CombinedCongruential) {
-
-		let a: number[] = [];
-		let m: number[] = [];
-		let s: number[] = [];
-		let k = Number(params.numGenerators);
-
-		for (let i = 1; i <= k; i++) {
-			a.push(Number(params[`a${i}`]))
-			m.push(Number(params[`m${i}`]))
-			s.push(Number(params[`s${i}`]))
-		}
-
-		console.log("a", a);
-		console.log("m", m);
-		console.log("s", s);
-
-		params = {
-			a,
-			m,
-			xi: s, // seeds for mclm
-		}  // arrays of length k 
-
-	} else {
-		params = paramsToIntegers(params);
-	}
-
-	return { seedVal, cleanParams: params };
-}
-
-// for checking congruential generators: a < m && seed < m
-const checkSingleCongruentialParams = (seedVal: number, cleanParams: CongruentialParams): boolean => {
-	const { m, a } = cleanParams;
-	return (m > a && m > seedVal);
+const completeParams = (params: QueueModelFormInputs, model: string) => {
+	return MODEL_PARAMS_CHECKS[model](params);
 }
 
 
