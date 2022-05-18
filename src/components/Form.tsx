@@ -4,11 +4,12 @@ import { SelectChangeEvent } from '@mui/material/Select'
 import { validateNumeric, paramsToIntegers, isInteger } from '../utils'
 import { MODELS } from '../stats/models'
 import { QueueModels } from '../QueueModels'
-import { CongruentialParams, QueueModelFormInputs, QueueModelParams } from '../types'
+import { CongruentialParams, QueueingTable, QueueModelFormInputs, QueueModelParams } from '../types'
 import { MODEL_PARAMS_CHECKS } from '../stats/models'
 
 interface Props {
 	updateRandoms: (randoms: number[]) => void,
+	updateResult: (result: QueueingTable) => void,
 	setError: (error: string) => void,
 	clearRandoms: () => void,
 	updateGlobalState: (name: string, value: any) => void,
@@ -17,29 +18,23 @@ interface Props {
 
 const Form: React.FC<Props> = ({
 	setError,
-	updateGlobalState,
+	updateResult,
 }) => {
 
 	const [model, setModel] = useState<string>(QueueModels.MM1);
-	const [seed, setSeed] = useState<string>("");
 	const [numberServers, setNumberRandoms] = useState<string>("1");  // number type html inputs hold strings
 	const [arrivalRate, setArrivalRate] = useState<string>("1");
-	const [serviceRate, setServiceRate] = useState<string>("1");
+	const [serviceRate, setServiceRate] = useState<string>("2");
 
 	const [maxUsers, setMaxUsers] = useState<string>("");
 	const [stDev, setStDev] = useState<string>("0.0");
 
 	const [disableNumServers, setDisableNumServers] = useState<boolean>(true);
-	const [params, setParams] = useState<any>({});
 	const [needsKParam, setNeedsKParam] = useState<boolean>(false);
 	const [needsStDev, setNeedsStDev] = useState<boolean>(false);
 	const [completeForm, setCompleteForm] = useState<boolean>(false);
 
-
-	useEffect(() => {
-		updateGlobalState('model', model);
-	}, [])
-
+	// Check form completeness according to model
 	useEffect(() => {          // completeForm updater
 		if (model !== "" && completeParams({numberServers, arrivalRate, serviceRate, maxUsers, stDev}, model)) {
 			setCompleteForm(true);
@@ -48,7 +43,8 @@ const Form: React.FC<Props> = ({
 		}
 	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev])
 
-	useEffect(() => {          // completeForm updater
+	// Activate Submit button
+	useEffect(() => {          
 		if (model !== "" && validateNumeric(arrivalRate) && validateNumeric(serviceRate)) {
 			setCompleteForm(true);
 		} else {
@@ -56,8 +52,8 @@ const Form: React.FC<Props> = ({
 		}
 	}, [model, serviceRate, arrivalRate])
 
+	// On 'model' change
 	useEffect(() => {
-		// disableNumServers 
 		if (model === QueueModels.MMS || model === QueueModels.MMSK) {
 			setDisableNumServers(false);
 		} else {
@@ -69,46 +65,56 @@ const Form: React.FC<Props> = ({
 
 	}, [model])
 
+	//
 	const handleMethodChange = (event: SelectChangeEvent) => {
-		setParams({})
+		setError("");
 		setModel(event.target.value);
 		console.log("Model selected:", event.target.value);
-		//updateGlobalState('model', event.target.value);
 	}
 
 
-
 	const onSubmit = (): void => {
+		setError("");
+		const servidores = Number(numberServers);
 
-		const n = Number(numberServers);
-
-		if (n <= 0) {
+		if (servidores <= 0) {
 			setError('Número de servidores inválido')
 			console.log("numRandoms not an int")
 			return;
 		}
-
-		console.log("Form Params", params);
 
 		if (!arrivalRate || !serviceRate) {
 			setError("Please fill the inputs");
 			console.log("lambda or mu are empty");
 			return;
 		};
+		
+		if (needsKParam && !maxUsers) {
+			setError("Missing max number of users in system");
+			console.log("Missing parameter k");
+			return;
+		}
 
-		if (serviceRate < arrivalRate) {
+		// Convert all inputs to number;
+		let tasaLlegadas, tasaServicios, maxClientes, sigma : number;
+		tasaLlegadas = Number(arrivalRate);
+		tasaServicios = Number(serviceRate);
+		maxClientes = Number(maxUsers);
+
+		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || needsKParam && Number.isNaN(maxClientes)) {
+			setError("Inputs must be numeric");
+			console.log("non-number inputs");
+			return;	
+		}
+
+		if (tasaServicios <= tasaLlegadas) {
+			console.log("tasa", tasaServicios, "tasaLlegadas", tasaLlegadas)
 			setError("For the system to be stable, arrival rate should be less than service rate");
 			console.log("unstable system inputs");
 			return;
 		}
 
-		if (needsKParam && !maxUsers) {
-			setError("Enter parameter k for max number of users in system");
-			console.log("unstable system inputs");
-			return;
-		}
-
-		if (needsKParam && numberServers > maxUsers) {
+		if (needsKParam && servidores > maxClientes) {
 			setError("Number of servers must be less than max number of users.");
 			console.log("incorrect MMSK system inputs");
 			return;
@@ -127,10 +133,17 @@ const Form: React.FC<Props> = ({
 			return;	
 		}
 
+		console.log("Results:")
+		let params = {
+			tasaLlegadas,
+			tasaServicios,
+			servidores, 
+			maxClientes,
+		}
 
-
-		return;
-		
+		let ans: QueueingTable = MODELS[model](params);
+		console.log(ans)
+		updateResult(ans);
 	}
 
 	return (
@@ -176,7 +189,7 @@ const Form: React.FC<Props> = ({
 				}
 				{
 					needsStDev && (
-						<TextField label="Standard Deviation" variant="filled"
+						<TextField type="number" label="Standard Deviation" variant="filled"
 							value={stDev}
 							onChange={(e) => setStDev(e.target.value)}></TextField>
 					)
@@ -194,6 +207,10 @@ const Form: React.FC<Props> = ({
 
 
 const completeParams = (params: QueueModelFormInputs, model: string) => {
+	if (!(model in MODEL_PARAMS_CHECKS)) {
+		console.log("model check not implemented", model);
+		return true;
+	}
 	return MODEL_PARAMS_CHECKS[model](params);
 }
 

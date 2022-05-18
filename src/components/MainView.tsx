@@ -3,8 +3,9 @@ import Form from './Form'
 import Result from './output/Result'
 import ValidationForm from './ValidationForm'
 import { Alert } from '@mui/material'
-import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
+import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 import {RNG} from '../RNGs'
+import { QueueingTable } from '../types'
 /* Global App State is managed from this component. */
 
 export default function MainView() {
@@ -12,6 +13,7 @@ export default function MainView() {
   const [random, setRandom] = useState<number | null>(null);
   const [alert, setAlert] = useState<ReactJSXElement | null>(null);
   const [randoms, setRandoms] = useState<number[]>([]);
+  const [queueTable, setQueueTable] = useState<QueueingTable | null>(null);
 
   const [globalState, setGlobalState] = useState({
     method: '',
@@ -42,8 +44,18 @@ export default function MainView() {
     setRandoms(randoms);
   }
 
+  const updateResult = (result: QueueingTable) => {
+    setAlert(null);
+    setQueueTable(result);
+  }
+
   const setError = (error: string): void => {
-    setAlert(<Alert severity="error">{error}</Alert>)
+    if (error !== "") {
+      setAlert(<Alert severity="error">{error}</Alert>);
+    } else {
+      setAlert(null);
+    }
+    
   }
 
   return (
@@ -51,6 +63,7 @@ export default function MainView() {
       <div className="row">
         <div className="column">
           <Form
+          updateResult={updateResult}
             updateRandoms={updateRandoms}
             setError={setError}
             clearRandoms={clearRandoms}
@@ -59,6 +72,7 @@ export default function MainView() {
         </div>
         <div className="column">
           <Result
+            queueTable={queueTable}
             random={random}
             alert={alert}
             randoms={randoms}

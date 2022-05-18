@@ -2,8 +2,10 @@ import React from 'react'
 import { Stack, List, ListItem, ListItemText } from '@mui/material'
 import { Link } from 'react-router-dom'
 import NumberList from './NumberList'
+import { QueueingTable } from '../../types/index'
 
 type Props = {
+    queueTable: QueueingTable|null,
     random: number | null,
     alert: any,
     randoms: number[],
@@ -11,6 +13,7 @@ type Props = {
 }
 
 const Result: React.FC<Props> = ({
+    queueTable,
     random,
     alert,
     randoms,
@@ -26,10 +29,9 @@ const Result: React.FC<Props> = ({
                         : 'Llena los parámetros y haz click en "Generar"'
                     }
                 </div>
-                {randoms.length > 0 ?
+                {queueTable ?
                     <>
-                        <h3>{randoms.length} Aleatorios Generados</h3>
-                        <NumberList numsList={randoms} method={method}/>
+                        <h3>Algo bien</h3>
                     </>
                     : <></>
                 }
