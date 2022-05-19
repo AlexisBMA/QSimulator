@@ -25,7 +25,7 @@ const Form: React.FC<Props> = ({
 }) => {
 
 	const [model, setModel] = useState<string>(QueueModels.MM1);
-	const [numberServers, setNumberRandoms] = useState<string>("1");  // number type html inputs hold strings
+	const [numberServers, setNumberServers] = useState<string>("1");  // number type html inputs hold strings
 	const [arrivalRate, setArrivalRate] = useState<string>("1");
 	const [serviceRate, setServiceRate] = useState<string>("2");
 
@@ -47,15 +47,6 @@ const Form: React.FC<Props> = ({
 		}
 	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev])
 
-	// Activate Submit button
-	useEffect(() => {
-		if (model !== "" && validateNumeric(arrivalRate) && validateNumeric(serviceRate)) {
-			setCompleteForm(true);
-		} else {
-			setCompleteForm(false);
-		}
-	}, [model, serviceRate, arrivalRate])
-
 	// On 'model' change
 	useEffect(() => {
 		clearResults();
@@ -63,6 +54,7 @@ const Form: React.FC<Props> = ({
 		if (model === QueueModels.MMS || model === QueueModels.MMSK) {
 			setDisableNumServers(false);
 		} else {
+			setNumberServers("1");
 			setDisableNumServers(true);
 		}
 
@@ -91,18 +83,12 @@ const Form: React.FC<Props> = ({
 		setError("");
 		const servidores = Number(numberServers);
 
-		if (servidores <= 0) {
-			setError('Número de servidores inválido')
-			console.log("numRandoms not an int")
-			return;
-		}
-
+		// Missing inputs
 		if (!arrivalRate || !serviceRate) {
 			setError("Please fill the inputs");
 			console.log("lambda or mu are empty");
 			return;
 		};
-
 		if (needsKParam && !maxUsers) {
 			setError("Missing max number of users in system");
 			console.log("Missing parameter k");
@@ -115,12 +101,28 @@ const Form: React.FC<Props> = ({
 		tasaServicios = Number(serviceRate);
 		maxClientes = Number(maxUsers);
 
+		// NaN checks
 		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || needsKParam && Number.isNaN(maxClientes)) {
 			setError("Inputs must be numeric");
 			console.log("non-number inputs");
 			return;
 		}
 
+		// Non-zero checks
+		if (servidores <= 0) {
+			setError("Number of Servers must be greater than zero");
+			return;
+		}
+		if (tasaLlegadas <= 0) {
+			setError("Arrival Rate must be greater than zero");
+			return;
+		}
+		if (tasaServicios <= 0) {
+			setError("Service Rate must be greater than zero");
+			return;
+		}
+
+		// Stable System
 		if (tasaServicios <= tasaLlegadas) {
 			console.log("tasa", tasaServicios, "tasaLlegadas", tasaLlegadas)
 			setError("For the system to be stable, arrival rate should be less than service rate");
@@ -128,6 +130,7 @@ const Form: React.FC<Props> = ({
 			return;
 		}
 
+		// MMsk check
 		if (needsKParam && servidores > maxClientes) {
 			setError("Number of servers must be less than max number of users.");
 			console.log("incorrect MMSK system inputs");
@@ -154,7 +157,7 @@ const Form: React.FC<Props> = ({
 			servidores,
 			maxClientes,
 		}
-
+		console.log(params)
 		let ans: QueueingTable = MODELS[model](params);
 		console.log(ans)
 		updateResult(ans);
@@ -185,7 +188,7 @@ const Form: React.FC<Props> = ({
 				</Select>
 				<TextField type="number" label="No. of Servers" variant="filled" disabled={disableNumServers}
 					value={numberServers}
-					onChange={(e) => setNumberRandoms(e.target.value)}></TextField>
+					onChange={(e) => setNumberServers(e.target.value)}></TextField>
 				<TextField type="number" label="Arrival Rate (hourly)" variant="filled"
 					value={arrivalRate}
 					onChange={(e) => setArrivalRate(e.target.value)}></TextField>

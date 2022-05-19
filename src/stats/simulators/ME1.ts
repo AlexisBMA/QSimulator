@@ -2,26 +2,27 @@ import { QueueingFunc,QueueingTable } from "../../types";
 
 // lambda = tasaLlegadas
 // nu = tasaServicios
-interface MM1Params {
+interface ME1Params {
     tasaLlegadas: number,
     tasaServicios: number,
-    servidores: number
+    k: number
 }
 
-const MM1 : QueueingFunc = (params: MM1Params) => {
+const ME1 : QueueingFunc = (params: ME1Params) => {
     let results: QueueingTable = {}
     results.lambda = params.tasaLlegadas
     results.mu = params.tasaServicios
+    results.k = params.k
     results.p = params.tasaLlegadas / params.tasaServicios 
     results.p0 = 1 - results.p
-    results.Lq = Math.pow(params.tasaLlegadas,2) / (params.tasaServicios * (params.tasaServicios - params.tasaLlegadas))
-    results.L = params.tasaLlegadas / (params.tasaServicios - params.tasaLlegadas)
+    results.Lq =((1+results.k)/(2*results.k)) * (Math.pow(params.tasaLlegadas,2) / (params.tasaServicios * (params.tasaServicios - params.tasaLlegadas)))
     results.Wq = results.Lq / params.tasaLlegadas
-    results.W = results.L / params.tasaLlegadas
-    results.s = params.servidores 
+    results.W = results.Wq + (1/ params.tasaServicios)
+    results.L = params.tasaLlegadas * results.W
+    
     return results   
 }
 
 
 
-export default MM1;
+export default ME1;

@@ -1,21 +1,91 @@
 import React, { useState } from 'react'
 import TableSwitch from './TableSwitch'
 import CalculateIcon from '@mui/icons-material/Calculate';
-import { Button, TextField, Stack, InputLabel } from '@mui/material'
+import { Alert, Button, TextField, Stack, InputLabel, FormControl } from '@mui/material'
 import { QueueingTable } from '../types';
+import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import { CostParams, getCost } from '../stats/cost'
+
+const centered: React.CSSProperties = {
+	display: 'flex',
+	justifyContent: 'center',
+}
 
 type Props = {
 	modelName: string,
 	table: QueueingTable
 }
 
+type CostResultProps = {
+	cost: number,
+}
+
+const CostResult: React.FC<CostResultProps> = ({ cost }) => {
+	if (!cost) {
+		return <></>
+	}
+	return (
+		<div style={centered}>
+			<Stack spacing={2} className="formStack">
+				<InputLabel htmlFor="outlined-adornment-amount">Total Cost</InputLabel>
+				<OutlinedInput
+					id="outlined-adornment-amount"
+					value={cost}
+					startAdornment={<InputAdornment position="start">$</InputAdornment>}
+					label="Total Cost"
+					inputProps={{
+						readOnly: true,
+					}}
+					color={
+                        'success'
+                    }
+				/>
+			</Stack>
+		</div>
+
+	)
+}
+
+
 const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
 	/* Inputs: Waiting Cost and Service Cost */
 	const [waitingCost, setWaitingCost] = useState<string>("");
 	const [serviceCost, setServiceCost] = useState<string>("");
+	const [cost, setCost] = useState<number | null>(null);
 
 	const hasResults = () => table !== null;
+	const hasCost = () => cost !== null;
 
+	const calculateCost = (Cw: number, Cs: number): number => {
+		const params: CostParams = {
+			Lq: table!.Lq!,
+			s: table!.s!,
+			Cw,
+			Cs,
+		}
+		console.log("params", params);
+		return getCost(params);
+	}
+
+	const handleOnClick = () => {
+
+		let Cw, Cs;
+		Cw = Number(waitingCost);
+		Cs = Number(serviceCost);
+		console.log("Get Cost", Cw, Cs);
+		if (Number.isNaN(Cw) || Number.isNaN(Cs)) {
+			return;
+		}
+
+		if (!table.Lq || !table.s) {
+			console.log("missing params: Lq or s")   // TOFIX
+			return;
+		};
+
+		let c = calculateCost(Cw, Cs);
+		setCost(c);
+	}
 
 	return (
 		<>
@@ -25,29 +95,37 @@ const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
 				hasResults() &&
 				<TableSwitch data={table!} modelName={modelName} />
 			}
-			<div >
-				<Stack spacing={2}>
-					<h4 style={{marginBottom:10}}>System Cost Calculation</h4>					<div>
-						<InputLabel id="select-label">Enter Service Cost:</InputLabel>
-						<TextField type="number" label="Service Cost (Cs)" variant="filled"
+			<div style={centered}>
+				<Stack spacing={2} className="formStack">
+					<h4 style={{ marginBottom: 10 }}>System Cost Calculation $</h4>
+					<FormControl>
+						<InputLabel htmlFor="service-cost">Enter Service Cost:</InputLabel>
+						<OutlinedInput
+							id="service-cost"
+							type="number"
+							label="Service Cost (Cs)"
 							value={serviceCost}
-							onChange={(e) => setServiceCost(e.target.value)}></TextField>
-					</div>
-					<div>
-						<InputLabel id="select-label">Enter Waiting Cost:</InputLabel>
-						<TextField type="number" label="Waiting Cost (Cw)" variant="filled"
+							startAdornment={<InputAdornment position="start">$</InputAdornment>}
+							onChange={(e) => setServiceCost(e.target.value)}></OutlinedInput>
+					</FormControl>
+					<FormControl>
+						<InputLabel htmlFor="waiting-cost">Enter Waiting Cost:</InputLabel>
+						<OutlinedInput
+							id="waiting-cost"
+							type="number"
 							value={waitingCost}
-							onChange={(e) => setWaitingCost(e.target.value)}></TextField>
-					</div>
+							label="Waiting Cost (Cw)"
+							startAdornment={<InputAdornment position="start">$</InputAdornment>}
+							onChange={(e) => setWaitingCost(e.target.value)}></OutlinedInput>
+					</FormControl>
 				</Stack>
-
 			</div>
 			<div className="validation-buttons">
 				<Button variant="contained" id='validationButton' startIcon={<CalculateIcon />}
-					onClick={() => console.log("Calculate Cost", serviceCost, waitingCost)}
+					onClick={handleOnClick}
 				>Calculate Cost</Button>
-
 			</div>
+			{hasCost() && <CostResult cost={cost!} />}
 		</>
 	)
 }

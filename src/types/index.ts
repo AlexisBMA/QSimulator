@@ -10,6 +10,8 @@ export interface QueueModelParams {
     numberServers: number,
     maxUsers?:number,
     stDev?: number,
+    sigma?:number,
+    k?:number
 }
 
 export interface QueueModelFormInputs {
@@ -18,24 +20,28 @@ export interface QueueModelFormInputs {
     numberServers: string,
     maxUsers?:string,
     stDev?: string,
+    sigma?:number,
+    k?:number
 }
 
 
 export type QueueingFunc = (params: any) => QueueingTable;
 
+export type CostFunc = (params: any) => number;
+
 export interface QueueingTable {
+    s?: number
     lambda?: number,
-    nu?: number,
     p?:number,
-    po?:number,
+    mu?: number,
     Lq?:number,
     L?:number,
     Wq?:number,
     W?:number,
-    s?: number
+    p0?:number,
     k?: number,
     lambdaE?: number,
     Pk?: number,
-    ro?: number,
+    rho?: number,
     tasaUtil?: number
 }
