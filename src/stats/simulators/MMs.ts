@@ -40,7 +40,7 @@ function getPo(params: any): number{
 }
 
 function getLq(params:any): number{
-    let Lq = (params.po * Math.pow((params.lambda/params.mu), params.s) * params.p) / (Factorial(params.s) * Math.pow((1 - params.p), 2))
+    let Lq = (params.p0 * Math.pow((params.lambda/params.mu), params.s) * params.p) / (Factorial(params.s) * Math.pow((1 - params.p), 2))
     return Lq
 }
 

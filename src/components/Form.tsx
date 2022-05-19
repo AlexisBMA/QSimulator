@@ -156,7 +156,7 @@ const Form: React.FC<Props> = ({
 			servidores,
 			maxClientes,
 		}
-
+		console.log(params);
 		let ans: QueueingTable = MODELS[model](params);
 		console.log(ans)
 		updateResult(ans);

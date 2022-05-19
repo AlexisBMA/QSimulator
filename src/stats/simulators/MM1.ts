@@ -4,7 +4,8 @@ import { QueueingFunc,QueueingTable } from "../../types";
 // nu = tasaServicios
 interface MM1Params {
     tasaLlegadas: number,
-    tasaServicios: number
+    tasaServicios: number,
+    servidores: number
 }
 
 const MM1 : QueueingFunc = (params: MM1Params) => {
@@ -17,6 +18,7 @@ const MM1 : QueueingFunc = (params: MM1Params) => {
     results.L = params.tasaLlegadas / (params.tasaServicios - params.tasaLlegadas)
     results.Wq = results.Lq / params.tasaLlegadas
     results.W = results.L / params.tasaLlegadas
+    results.s = params.servidores 
     return results   
 }
 
