@@ -1,7 +1,6 @@
 import React from 'react'
-import TestTable from './output/TestTable'
 import QueueTable from './output/QueueTable'
-import { ChiSquaredTable, KolSmiTable, QueueingTable, ValidatorResult } from '../types'
+import { QueueingTable } from '../types'
 
 
 type Props = {

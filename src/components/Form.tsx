@@ -6,7 +6,7 @@ import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 
 import { MODELS } from '../stats/models'
 import { QueueModels } from '../QueueModels'
-import { CongruentialParams, QueueingTable, QueueModelFormInputs, QueueModelParams } from '../types'
+import {  QueueingTable, QueueModelFormInputs } from '../types'
 import { MODEL_PARAMS_CHECKS } from '../stats/models'
 
 interface Props {

@@ -1,14 +1,8 @@
 import React, { useState } from 'react'
 import TableSwitch from './TableSwitch'
 import CalculateIcon from '@mui/icons-material/Calculate';
-import FunctionsIcon from '@mui/icons-material/Functions';
 import { Button, TextField, Stack, InputLabel } from '@mui/material'
-import { SelectChangeEvent } from '@mui/material/Select'
-import { EXAMPLE_CHI_TABLE } from '../constants'
-import { QueueingTable, ValidatorResult } from '../types';
-import testKolSmi from '../stats/tests/kolmogrovSmirnov';
-import chiSquaredTest from '../stats/tests/chiSquared';
-import { kolSmiValues, chiSquaredValues } from '../criticalValues';
+import { QueueingTable } from '../types';
 
 type Props = {
 	modelName: string,

@@ -3,9 +3,8 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { QueueModelNames } from '../../QueueModels'
-import { QueueingTable, ValidatorResult } from '../../types'
+import { QueueingTable } from '../../types'
 import { CSVLink } from 'react-csv';
-import { formatNum, tableToCSVData } from '../../utils';
 import { Data } from 'react-csv/components/CommonPropTypes';
 
 type Props = {
@@ -29,10 +28,10 @@ const TestTable: React.FC<Props> = ({ table, modelName }) => {
         if (table === null) return;
 
         console.log("converting to Data array");
-        let dataArray = tableToCSVData(table);
+        /* let dataArray = tableToCSVData(table);
         setCsvData(dataArray);
         console.log("CSV data:");
-        console.log(dataArray);
+        console.log(dataArray); */
     }, [table])
 
     if (table === null) return (
@@ -60,7 +59,7 @@ const TestTable: React.FC<Props> = ({ table, modelName }) => {
                             filename={`${modelName}_simulation.csv`}
                             style={{ textDecoration: 'none' }}
                         >
-                            <Button variant='outlined' fullWidth>
+                            <Button disabled variant='outlined' fullWidth>
                                 Exportar a CSV
                             </Button>
                         </CSVLink>
