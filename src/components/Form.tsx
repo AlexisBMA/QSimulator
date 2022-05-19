@@ -47,15 +47,6 @@ const Form: React.FC<Props> = ({
 		}
 	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev])
 
-	// Activate Submit button
-	useEffect(() => {
-		if (model !== "" && validateNumeric(arrivalRate) && validateNumeric(serviceRate)) {
-			setCompleteForm(true);
-		} else {
-			setCompleteForm(false);
-		}
-	}, [model, serviceRate, arrivalRate])
-
 	// On 'model' change
 	useEffect(() => {
 		clearResults();
@@ -91,18 +82,12 @@ const Form: React.FC<Props> = ({
 		setError("");
 		const servidores = Number(numberServers);
 
-		if (servidores <= 0) {
-			setError('Número de servidores inválido')
-			console.log("numRandoms not an int")
-			return;
-		}
-
+		// Missing inputs
 		if (!arrivalRate || !serviceRate) {
 			setError("Please fill the inputs");
 			console.log("lambda or mu are empty");
 			return;
 		};
-
 		if (needsKParam && !maxUsers) {
 			setError("Missing max number of users in system");
 			console.log("Missing parameter k");
@@ -115,12 +100,28 @@ const Form: React.FC<Props> = ({
 		tasaServicios = Number(serviceRate);
 		maxClientes = Number(maxUsers);
 
+		// NaN checks
 		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || needsKParam && Number.isNaN(maxClientes)) {
 			setError("Inputs must be numeric");
 			console.log("non-number inputs");
 			return;
 		}
 
+		// Non-zero checks
+		if (servidores <= 0) {
+			setError("Number of Servers must be greater than zero");
+			return;
+		}
+		if (tasaLlegadas <= 0) {
+			setError("Arrival Rate must be greater than zero");
+			return;
+		}
+		if (tasaServicios <= 0) {
+			setError("Service Rate must be greater than zero");
+			return;
+		}
+
+		// Stable System
 		if (tasaServicios <= tasaLlegadas) {
 			console.log("tasa", tasaServicios, "tasaLlegadas", tasaLlegadas)
 			setError("For the system to be stable, arrival rate should be less than service rate");
@@ -128,6 +129,7 @@ const Form: React.FC<Props> = ({
 			return;
 		}
 
+		// MMsk check
 		if (needsKParam && servidores > maxClientes) {
 			setError("Number of servers must be less than max number of users.");
 			console.log("incorrect MMSK system inputs");
