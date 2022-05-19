@@ -25,7 +25,7 @@ const Form: React.FC<Props> = ({
 }) => {
 
 	const [model, setModel] = useState<string>(QueueModels.MM1);
-	const [numberServers, setNumberRandoms] = useState<string>("1");  // number type html inputs hold strings
+	const [numberServers, setNumberServers] = useState<string>("1");  // number type html inputs hold strings
 	const [arrivalRate, setArrivalRate] = useState<string>("1");
 	const [serviceRate, setServiceRate] = useState<string>("2");
 
@@ -54,6 +54,7 @@ const Form: React.FC<Props> = ({
 		if (model === QueueModels.MMS || model === QueueModels.MMSK) {
 			setDisableNumServers(false);
 		} else {
+			setNumberServers("1");
 			setDisableNumServers(true);
 		}
 
@@ -156,7 +157,7 @@ const Form: React.FC<Props> = ({
 			servidores,
 			maxClientes,
 		}
-		console.log(params);
+		console.log(params)
 		let ans: QueueingTable = MODELS[model](params);
 		console.log(ans)
 		updateResult(ans);
@@ -187,7 +188,7 @@ const Form: React.FC<Props> = ({
 				</Select>
 				<TextField type="number" label="No. of Servers" variant="filled" disabled={disableNumServers}
 					value={numberServers}
-					onChange={(e) => setNumberRandoms(e.target.value)}></TextField>
+					onChange={(e) => setNumberServers(e.target.value)}></TextField>
 				<TextField type="number" label="Arrival Rate (hourly)" variant="filled"
 					value={arrivalRate}
 					onChange={(e) => setArrivalRate(e.target.value)}></TextField>

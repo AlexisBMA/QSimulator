@@ -1,5 +1,6 @@
 import { QueueingFunc,QueueingTable } from "../../types";
-
+import {getCost} from '../cost';
+// import {getCost} from '../'
 interface MMsKParams {
     tasaLlegadas: number,
     tasaServicios: number,
@@ -60,12 +61,21 @@ function getLq(params:any){
     return firstPart * secondPart
 }
 
-console.log("RESULTADO");
+/* console.log("RESULTADO");
 console.log(MMsK({
-    tasaLlegadas: 2,
-    tasaServicios: 3,
+    tasaLlegadas: 3,
+    tasaServicios: 2,
     servidores: 1,
     maxClientes: 3
 }))
+console.log("$")
+console.log(getCost({
+    Lq: 0.4307692307692305,
+    Cw: 45,
+    Cs: 89.8,
+    s: 1,
+})) */
+
+
 
 export default MMsK;
