@@ -118,21 +118,26 @@ export const MMskCheck = (params: QueueModelFormInputs) => {
 export const MD1Check = (params: QueueModelFormInputs) => {
     return Boolean(
         params.arrivalRate &&
-        params.serviceRate
+        params.serviceRate 
+
     )
 }
 
 export const MG1Check = (params: QueueModelFormInputs) => {
     return Boolean(
         params.arrivalRate &&
-        params.serviceRate 
+        params.serviceRate &&
+        params.sigma &&
+        params.sigma > 0
     )
 }
 
 export const ME1Check = (params: QueueModelFormInputs) => {
     return Boolean(
         params.arrivalRate &&
-        params.serviceRate
+        params.serviceRate &&
+        params.k &&
+        params.k > 0
     )
 }
 

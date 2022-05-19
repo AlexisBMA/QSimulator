@@ -8,7 +8,7 @@ import MD1 from "./simulators/MD1";
 import ME1 from "./simulators/ME1";
 import MG1 from "./simulators/MG1";
 import { QueueingFunc } from "../types";
-import { MM1Check, MMsCheck, MMskCheck } from "./paramValidation";
+import { MM1Check, MMsCheck, MMskCheck, MD1Check, ME1Check, MG1Check } from "./paramValidation";
 
 
 export const MODELS : Record<string, QueueingFunc> = {
@@ -24,6 +24,9 @@ export const MODEL_PARAMS_CHECKS : Record<string, ParamsValidator> = {
     [QueueModels.MM1]: MM1Check,
     [QueueModels.MMS]: MMsCheck,
     [QueueModels.MMSK]: MMskCheck,
+    [QueueModels.MD1]: MD1Check,
+    [QueueModels.ME1]: ME1Check,
+    [QueueModels.MG1]: MG1Check
 }
 
 export const MODEL_PARAMS_VALIDATORS : Record<string, ParamsValidator> = {

@@ -2,12 +2,12 @@ import { QueueingFunc,QueueingTable } from "../../types";
 
 // lambda = tasaLlegadas
 // nu = tasaServicios
-interface MM1Params {
+interface MD1Params {
     tasaLlegadas: number,
     tasaServicios: number
 }
 
-const MD1 : QueueingFunc = (params: MM1Params) => {
+const MD1 : QueueingFunc = (params: MD1Params) => {
     let results: QueueingTable = {}
     results.lambda = params.tasaLlegadas
     results.nu = params.tasaServicios
