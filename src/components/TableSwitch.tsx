@@ -1,17 +1,16 @@
 import React from 'react'
-import TestTable from './output/TestTable'
-import DataTable from './output/DataTable'
-import { ChiSquaredTable, KolSmiTable, ValidatorResult } from '../types'
+import QueueTable from './output/QueueTable'
+import { QueueingTable } from '../types'
 
 
 type Props = {
-    data: ValidatorResult,
-    type: number,
+    data: QueueingTable,
+    modelName: string,
 }
 
 const TableSwitch : React.FC<Props> = ({
     data,
-    type
+    modelName
 }) => {
 
     // Don't show anything if there is no table data
@@ -19,18 +18,10 @@ const TableSwitch : React.FC<Props> = ({
         return <></>
     }
 
-    // Demian
-    if (type===1) {
-        return (
-            <TestTable data={data}/>
-        )
-    }
-
-    else {
-        return (
-            <DataTable data={data}/>
-        )
-    }
+    return (
+        <QueueTable table={data} modelName={modelName}/>
+    )
+    
 }
 
 export default TableSwitch
