@@ -46,11 +46,8 @@
 	
 }
 .validation-buttons{
-	width: 60%;
-	margin-top: 15px;
-	display: flex;
+	margin-top: 30px;
 	gap: 10%;
-	margin-left: 20vw;
 	margin-bottom: 15px;
 }
 #validationButton{
@@ -87,7 +84,8 @@
 
 .row {
   display: flex;
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - 180px);
+  justify-content: center;
 }
 
 .row:after {
@@ -175,7 +173,7 @@
   width: 100%;
 }
 
-.validationForm {
+.resultsAndCost {
   display:block;
   text-align: center;
   min-height: 60vh;

@@ -1,24 +1,27 @@
 import React, { ChangeEventHandler, useState, useEffect } from 'react'
-import { Button, TextField, Stack, Select, MenuItem } from '@mui/material'
+import { Alert, Button, TextField, Stack, Select, MenuItem } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select'
 import { validateNumeric, paramsToIntegers, isInteger } from '../utils'
+import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
+
 import { MODELS } from '../stats/models'
 import { QueueModels } from '../QueueModels'
 import { CongruentialParams, QueueingTable, QueueModelFormInputs, QueueModelParams } from '../types'
 import { MODEL_PARAMS_CHECKS } from '../stats/models'
 
 interface Props {
-	updateRandoms: (randoms: number[]) => void,
 	updateResult: (result: QueueingTable) => void,
-	setError: (error: string) => void,
-	clearRandoms: () => void,
+	// setError: (error: string) => void,
+	clearResults: () => void,
 	updateGlobalState: (name: string, value: any) => void,
 }
 
 
 const Form: React.FC<Props> = ({
-	setError,
+	// setError,
 	updateResult,
+	updateGlobalState,
+	clearResults,
 }) => {
 
 	const [model, setModel] = useState<string>(QueueModels.MM1);
@@ -33,10 +36,11 @@ const Form: React.FC<Props> = ({
 	const [needsKParam, setNeedsKParam] = useState<boolean>(false);
 	const [needsStDev, setNeedsStDev] = useState<boolean>(false);
 	const [completeForm, setCompleteForm] = useState<boolean>(false);
+	const [alert, setAlert] = useState<ReactJSXElement | null>(null);
 
 	// Check form completeness according to model
 	useEffect(() => {          // completeForm updater
-		if (model !== "" && completeParams({numberServers, arrivalRate, serviceRate, maxUsers, stDev}, model)) {
+		if (model !== "" && completeParams({ numberServers, arrivalRate, serviceRate, maxUsers, stDev }, model)) {
 			setCompleteForm(true);
 		} else {
 			setCompleteForm(false);
@@ -44,7 +48,7 @@ const Form: React.FC<Props> = ({
 	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev])
 
 	// Activate Submit button
-	useEffect(() => {          
+	useEffect(() => {
 		if (model !== "" && validateNumeric(arrivalRate) && validateNumeric(serviceRate)) {
 			setCompleteForm(true);
 		} else {
@@ -54,6 +58,8 @@ const Form: React.FC<Props> = ({
 
 	// On 'model' change
 	useEffect(() => {
+		clearResults();
+
 		if (model === QueueModels.MMS || model === QueueModels.MMSK) {
 			setDisableNumServers(false);
 		} else {
@@ -61,17 +67,25 @@ const Form: React.FC<Props> = ({
 		}
 
 		setNeedsKParam(model === QueueModels.MMSK);
-		setNeedsStDev(model === QueueModels.MD1 || model === QueueModels.ME1 || model === QueueModels.MG1); 
+		setNeedsStDev(model === QueueModels.MD1 || model === QueueModels.ME1 || model === QueueModels.MG1);
 
 	}, [model])
 
-	//
-	const handleMethodChange = (event: SelectChangeEvent) => {
-		setError("");
-		setModel(event.target.value);
-		console.log("Model selected:", event.target.value);
+	const setError = (error: string): void => {
+		if (error !== "") {
+			setAlert(<Alert severity="error">{error}</Alert>);
+		} else {
+			setAlert(null);
+		}
 	}
 
+	const handleModelChange = (event: SelectChangeEvent) => {
+		setError("");
+		console.log("Empty error...")
+		setModel(event.target.value);
+		updateGlobalState('modelName', event.target.value);
+		console.log("Model selected:", event.target.value);
+	}
 
 	const onSubmit = (): void => {
 		setError("");
@@ -88,7 +102,7 @@ const Form: React.FC<Props> = ({
 			console.log("lambda or mu are empty");
 			return;
 		};
-		
+
 		if (needsKParam && !maxUsers) {
 			setError("Missing max number of users in system");
 			console.log("Missing parameter k");
@@ -96,7 +110,7 @@ const Form: React.FC<Props> = ({
 		}
 
 		// Convert all inputs to number;
-		let tasaLlegadas, tasaServicios, maxClientes, sigma : number;
+		let tasaLlegadas, tasaServicios, maxClientes, sigma: number;
 		tasaLlegadas = Number(arrivalRate);
 		tasaServicios = Number(serviceRate);
 		maxClientes = Number(maxUsers);
@@ -104,7 +118,7 @@ const Form: React.FC<Props> = ({
 		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || needsKParam && Number.isNaN(maxClientes)) {
 			setError("Inputs must be numeric");
 			console.log("non-number inputs");
-			return;	
+			return;
 		}
 
 		if (tasaServicios <= tasaLlegadas) {
@@ -130,14 +144,14 @@ const Form: React.FC<Props> = ({
 
 		if (!(model in MODELS)) {
 			setError("No implementado aún :P");
-			return;	
+			return;
 		}
 
 		console.log("Results:")
 		let params = {
 			tasaLlegadas,
 			tasaServicios,
-			servidores, 
+			servidores,
 			maxClientes,
 		}
 
@@ -149,12 +163,12 @@ const Form: React.FC<Props> = ({
 	return (
 		<div className="formContainer">
 			<Stack spacing={2} className="formStack">
-				<h4>Sistema de Colas:</h4>
+				<h4>Enter System Parameters:</h4>
 				<Select
 					labelId="model-selector-label"
 					id="model-selector"
 					value={model}
-					onChange={handleMethodChange}
+					onChange={handleModelChange}
 				>
 					<MenuItem value="">
 						<em>No Selection</em>
@@ -194,7 +208,7 @@ const Form: React.FC<Props> = ({
 							onChange={(e) => setStDev(e.target.value)}></TextField>
 					)
 				}
-
+				{alert}
 			</Stack>
 
 			{/* Submit Button */}

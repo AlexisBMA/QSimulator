@@ -9,7 +9,7 @@ type Props = {
     random: number | null,
     alert: any,
     randoms: number[],
-    method: string,
+    modelName:string,
 }
 
 const Result: React.FC<Props> = ({
@@ -17,7 +17,7 @@ const Result: React.FC<Props> = ({
     random,
     alert,
     randoms,
-    method
+    modelName,
 }) => {
 
     return (

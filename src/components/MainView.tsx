@@ -1,88 +1,49 @@
 import React, { useState } from 'react'
 import Form from './Form'
 import Result from './output/Result'
-import ValidationForm from './ValidationForm'
-import { Alert } from '@mui/material'
-import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
-import {RNG} from '../RNGs'
+import ResultsAndCost from './ResultsAndCost'
 import { QueueingTable } from '../types'
 /* Global App State is managed from this component. */
 
 export default function MainView() {
 
   const [random, setRandom] = useState<number | null>(null);
-  const [alert, setAlert] = useState<ReactJSXElement | null>(null);
   const [randoms, setRandoms] = useState<number[]>([]);
   const [queueTable, setQueueTable] = useState<QueueingTable | null>(null);
 
   const [globalState, setGlobalState] = useState({
-    method: '',
+    modelName: '',
   })
 
+  // updates modelName
   const updateGlobalState = (name: string, value: any) => {
-    setAlert(null);
     setGlobalState({
       ...globalState,
       [name]: value,
     })
   }
 
-  const clearRandoms = () => {
-    setRandoms([]);
+  const clearResults = () => {
+    setQueueTable(null);
   }
 
-  const hasSample = (): boolean => randoms.length > 1;
-  const hasValidation = (): boolean => (
-      globalState.method === RNG.LinearCongruential ||
-      globalState.method === RNG.MixedCongruential ||
-      globalState.method === RNG.MultiplicativeCongruential || 
-      globalState.method === RNG.MathRandom
-    )
-
-  const updateRandoms = (randoms: number[]) => {
-    setAlert(null);
-    setRandoms(randoms);
-  }
-
+  const hasResults = (): boolean => queueTable !== null; //randoms.length > 1;
   const updateResult = (result: QueueingTable) => {
-    setAlert(null);
     setQueueTable(result);
-  }
-
-  const setError = (error: string): void => {
-    if (error !== "") {
-      setAlert(<Alert severity="error">{error}</Alert>);
-    } else {
-      setAlert(null);
-    }
-    
   }
 
   return (
     <div className="App-main">
       <div className="row">
-        <div className="column">
           <Form
           updateResult={updateResult}
-            updateRandoms={updateRandoms}
-            setError={setError}
-            clearRandoms={clearRandoms}
+            clearResults={clearResults}
             updateGlobalState={updateGlobalState}
           />
-        </div>
-        <div className="column">
-          <Result
-            queueTable={queueTable}
-            random={random}
-            alert={alert}
-            randoms={randoms}
-            method={globalState.method}
-          />
-        </div>
       </div>
-      {hasSample() && hasValidation() && (
-        <div className="validationForm">
-          <ValidationForm sample={randoms} />
+      {hasResults() && (
+        <div className="resultsAndCost">
+          <ResultsAndCost table={queueTable!} modelName={globalState.modelName}/>
         </div>
       )}
     </div >
