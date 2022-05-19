@@ -1,7 +1,6 @@
 import React from 'react'
 import { Stack, List, ListItem, ListItemText } from '@mui/material'
 import { Link } from 'react-router-dom'
-import NumberList from './NumberList'
 import { QueueingTable } from '../../types/index'
 
 type Props = {

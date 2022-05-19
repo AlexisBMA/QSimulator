@@ -31,7 +31,7 @@ const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
 				hasResults() &&
 				<TableSwitch data={table!} modelName={modelName} />
 			}
-			<div className='Validacion'>
+			<div >
 				<Stack spacing={2}>
 					<h4 style={{marginBottom:10}}>System Cost Calculation</h4>					<div>
 						<InputLabel id="select-label">Enter Service Cost:</InputLabel>
