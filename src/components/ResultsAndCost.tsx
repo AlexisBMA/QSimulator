@@ -22,6 +22,9 @@ type CostResultProps = {
 }
 
 const CostResult: React.FC<CostResultProps> = ({ cost }) => {
+	if (!cost) {
+		return <></>
+	}
 	return (
 		<div style={centered}>
 			<Stack spacing={2} className="formStack">
@@ -49,7 +52,7 @@ const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
 	/* Inputs: Waiting Cost and Service Cost */
 	const [waitingCost, setWaitingCost] = useState<string>("");
 	const [serviceCost, setServiceCost] = useState<string>("");
-	const [cost, setCost] = useState<number | null>();
+	const [cost, setCost] = useState<number | null>(null);
 
 	const hasResults = () => table !== null;
 	const hasCost = () => cost !== null;
