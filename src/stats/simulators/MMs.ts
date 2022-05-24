@@ -20,14 +20,13 @@ const MMs : QueueingFunc = (params: MMsParams) => {
     return results
 }
 
-function Factorial(num: number): any {
-    if (num < 0) 
-          return -1;
-    else if (num == 0) 
-        return 1;
-    else {
-        return (num * Factorial(num - 1));
-    }
+
+function Factorial(num:number):any
+{
+    var rval=1;
+    for (var i = 2; i <= num; i++)
+        rval = rval * i;
+    return rval;
 }
 
 function getPo(params: any): number{

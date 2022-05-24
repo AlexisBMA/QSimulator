@@ -19,6 +19,7 @@ const ME1 : QueueingFunc = (params: ME1Params) => {
     results.Wq = results.Lq / params.tasaLlegadas
     results.W = results.Wq + (1/ params.tasaServicios)
     results.L = params.tasaLlegadas * results.W
+    results.s = 1
     
     return results   
 }

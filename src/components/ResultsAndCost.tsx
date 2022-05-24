@@ -78,7 +78,7 @@ const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
 			return;
 		}
 
-		if (!table.Lq || !table.s) {
+		if (table.Lq === undefined || table.s === undefined) {
 			console.log("missing params: Lq or s")   // TOFIX
 			return;
 		};

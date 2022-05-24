@@ -31,21 +31,23 @@ const Form: React.FC<Props> = ({
 
 	const [maxUsers, setMaxUsers] = useState<string>("");
 	const [stDev, setStDev] = useState<string>("0.0");
+	const [kDev, setKDev] = useState<string>("0");
 
 	const [disableNumServers, setDisableNumServers] = useState<boolean>(true);
 	const [needsKParam, setNeedsKParam] = useState<boolean>(false);
 	const [needsStDev, setNeedsStDev] = useState<boolean>(false);
+	const [needsKDev, setNeedsKDev] = useState<boolean>(false);
 	const [completeForm, setCompleteForm] = useState<boolean>(false);
 	const [alert, setAlert] = useState<ReactJSXElement | null>(null);
 
 	// Check form completeness according to model
 	useEffect(() => {          // completeForm updater
-		if (model !== "" && completeParams({ numberServers, arrivalRate, serviceRate, maxUsers, stDev }, model)) {
+		if (model !== "" && completeParams({ numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev}, model)) {
 			setCompleteForm(true);
 		} else {
 			setCompleteForm(false);
 		}
-	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev])
+	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev])
 
 	// On 'model' change
 	useEffect(() => {
@@ -59,7 +61,8 @@ const Form: React.FC<Props> = ({
 		}
 
 		setNeedsKParam(model === QueueModels.MMSK);
-		setNeedsStDev(model === QueueModels.MD1 || model === QueueModels.ME1 || model === QueueModels.MG1);
+		setNeedsStDev(model === QueueModels.MG1);
+		setNeedsKDev(model === QueueModels.ME1);
 
 	}, [model])
 
@@ -96,13 +99,15 @@ const Form: React.FC<Props> = ({
 		}
 
 		// Convert all inputs to number;
-		let tasaLlegadas, tasaServicios, maxClientes, sigma: number;
+		let tasaLlegadas, tasaServicios, maxClientes, sigma, k: number;
 		tasaLlegadas = Number(arrivalRate);
 		tasaServicios = Number(serviceRate);
 		maxClientes = Number(maxUsers);
+		sigma = Number(stDev);
+		k = Number(kDev);
 
 		// NaN checks
-		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || needsKParam && Number.isNaN(maxClientes)) {
+		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || needsKParam && Number.isNaN(maxClientes) || needsKDev && Number.isNaN(kDev)) {
 			setError("Inputs must be numeric");
 			console.log("non-number inputs");
 			return;
@@ -121,13 +126,15 @@ const Form: React.FC<Props> = ({
 			setError("Service Rate must be greater than zero");
 			return;
 		}
-
 		// Stable System
 		if (tasaServicios <= tasaLlegadas) {
 			console.log("tasa", tasaServicios, "tasaLlegadas", tasaLlegadas)
 			setError("For the system to be stable, arrival rate should be less than service rate");
 			console.log("unstable system inputs");
 			return;
+		}
+		if (servidores > 170){
+			setError("The max value for servers is 170")
 		}
 
 		// MMsk check
@@ -136,8 +143,13 @@ const Form: React.FC<Props> = ({
 			console.log("incorrect MMSK system inputs");
 			return;
 		}
+		// MG1 check
+		if (needsKDev && !Number.isInteger(k)) {
+			setError("Number must be an integer");
+			console.log("incorrect ME1 system inputs");
+			return;
+		}
 
-		// TODO checks for General Case
 
 		console.log("Method selected:", model);
 		console.log("arrivalRate", arrivalRate);
@@ -156,6 +168,8 @@ const Form: React.FC<Props> = ({
 			tasaServicios,
 			servidores,
 			maxClientes,
+			sigma,
+			k
 		}
 		console.log(params)
 		let ans: QueueingTable = MODELS[model](params);
@@ -209,6 +223,13 @@ const Form: React.FC<Props> = ({
 						<TextField type="number" label="Standard Deviation" variant="filled"
 							value={stDev}
 							onChange={(e) => setStDev(e.target.value)}></TextField>
+					)
+				}
+				{
+					needsKDev && (
+						<TextField type="number" label="Erlang Type number" variant="filled"
+							value={kDev}
+							onChange={(e) => setKDev(e.target.value)}></TextField>
 					)
 				}
 				{alert}
