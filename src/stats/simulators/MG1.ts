@@ -15,12 +15,14 @@ const MG1 : QueueingFunc = (params: MG1Params) => {
     results.mu = params.tasaServicios
     results.p = params.tasaLlegadas / params.tasaServicios 
     results.p0 = 1 - results.p
+    console.log((Math.pow(results.lambda,2)*Math.pow(params.sigma,2)))
     results.Lq = ((Math.pow(results.lambda,2)*Math.pow(params.sigma,2)) + Math.pow(results.p,2))/ (2 * (1 - results.p))
     results.L = results.p + results.Lq
     results.Wq = results.Lq / params.tasaLlegadas
     results.W = results.Wq + (1/ params.tasaServicios)
     results.s = 1;
     console.log("Results")
+    console.log(results)
     return results   
 }
 

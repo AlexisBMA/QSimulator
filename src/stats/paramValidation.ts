@@ -60,18 +60,14 @@ export const MD1Check = (params: QueueModelFormInputs) => {
 export const MG1Check = (params: QueueModelFormInputs) => {
     return Boolean(
         params.arrivalRate &&
-        params.serviceRate &&
-        params.sigma &&
-        params.sigma > 0
+        params.serviceRate 
     )
 }
 
 export const ME1Check = (params: QueueModelFormInputs) => {
     return Boolean(
         params.arrivalRate &&
-        params.serviceRate &&
-        params.k &&
-        params.k > 0
+        params.serviceRate 
     )
 }
 

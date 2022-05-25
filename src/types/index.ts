@@ -10,8 +10,7 @@ export interface QueueModelParams {
     numberServers: number,
     maxUsers?:number,
     stDev?: number,
-    sigma?:number,
-    k?:number
+    kDev?:string
 }
 
 export interface QueueModelFormInputs {
@@ -20,8 +19,7 @@ export interface QueueModelFormInputs {
     numberServers: string,
     maxUsers?:string,
     stDev?: string,
-    sigma?:number,
-    k?:number
+    kDev?:string
 }
 
 

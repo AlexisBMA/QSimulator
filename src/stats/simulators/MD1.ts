@@ -17,6 +17,7 @@ const MD1 : QueueingFunc = (params: MD1Params) => {
     results.L = results.p + results.Lq
     results.Wq = results.Lq / params.tasaLlegadas
     results.W = results.Wq + (1/ params.tasaServicios)
+    results.s = 1
     
     
     return results   
