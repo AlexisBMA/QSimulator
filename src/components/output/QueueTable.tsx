@@ -23,16 +23,10 @@ const queueTableLabels = {
 
 const TestTable: React.FC<Props> = ({ table, modelName }) => {
 
-    const [csvData, setCsvData] = useState<Data>([]);
 
     useEffect(() => {
         if (table === null) return;
 
-        console.log("converting to Data array");
-        /* let dataArray = tableToCSVData(table);
-        setCsvData(dataArray);
-        console.log("CSV data:");
-        console.log(dataArray); */
     }, [table])
 
     if (table === null) return (

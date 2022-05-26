@@ -9,6 +9,7 @@ interface MMsKParams {
 }
 
 const MMsK : QueueingFunc = (params: MMsKParams) => {
+    console.log("params", params);
     let results: QueueingTable = {}
     results.lambda = params.tasaLlegadas
     results.mu = params.tasaServicios
@@ -24,6 +25,7 @@ const MMsK : QueueingFunc = (params: MMsKParams) => {
     results.L = results.lambdaE * results.W
     results.tasaUtil = 1 - results.p0
     results.p = results.rho
+    console.log("results", results);
     return results
 }
 
@@ -62,20 +64,6 @@ function getLq(params:any){
     return firstPart * secondPart
 }
 
-/* console.log("RESULTADO");
-console.log(MMsK({
-    tasaLlegadas: 3,
-    tasaServicios: 2,
-    servidores: 1,
-    maxClientes: 3
-}))
-console.log("$")
-console.log(getCost({
-    Lq: 0.4307692307692305,
-    Cw: 45,
-    Cs: 89.8,
-    s: 1,
-})) */
 
 
 
