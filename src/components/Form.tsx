@@ -162,7 +162,8 @@ const Form: React.FC<Props> = ({
 			return;
 		}
 		if (servidores > 170) {
-			setError("Maximum value for servers is 170")
+			setError("Maximum value for servers is 170");
+			return;
 		}
 
 		// MMsk check
