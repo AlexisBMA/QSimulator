@@ -155,7 +155,7 @@ const Form: React.FC<Props> = ({
 			return;
 		}
 		// Stable System
-		if (tasaServicios <= tasaLlegadas) {
+		if ((tasaServicios*servidores) <= tasaLlegadas) { // lambda < mu*s
 			console.log("tasa", tasaServicios, "tasaLlegadas", tasaLlegadas)
 			setError("For the system to be stable, arrival rate should be less than service rate");
 			console.log("unstable system inputs");
