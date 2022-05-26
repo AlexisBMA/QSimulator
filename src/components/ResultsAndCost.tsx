@@ -1,15 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import TableSwitch from './TableSwitch'
 import CalculateIcon from '@mui/icons-material/Calculate';
-import { Alert, Button, TextField, Stack, InputLabel, FormControl } from '@mui/material'
+import { Button, Stack, InputLabel, FormControl } from '@mui/material'
 import { QueueingTable } from '../types';
 import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { CostParams, getCost } from '../stats/cost'
+import { CostParams, getCost } from '../stats/cost';
 
 const centered: React.CSSProperties = {
 	display: 'flex',
 	justifyContent: 'center',
+	minHeight: 300
 }
 
 type Props = {
@@ -28,7 +29,7 @@ const CostResult: React.FC<CostResultProps> = ({ cost }) => {
 	return (
 		<div style={centered}>
 			<Stack spacing={2} className="formStack">
-				<InputLabel htmlFor="outlined-adornment-amount">Total Cost</InputLabel>
+				<h4 >Total Cost</h4>
 				<OutlinedInput
 					id="outlined-adornment-amount"
 					value={cost}
@@ -48,25 +49,29 @@ const CostResult: React.FC<CostResultProps> = ({ cost }) => {
 }
 
 
-const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
+const ResultsAndCost: React.FC<Props> = (props:Props) => {
 	/* Inputs: Waiting Cost and Service Cost */
 	const [waitingCost, setWaitingCost] = useState<string>("");
 	const [serviceCost, setServiceCost] = useState<string>("");
 	const [cost, setCost] = useState<number | null>(null);
 
-	const hasResults = () => table !== null;
+	const hasResults = () => props.table !== null;
 	const hasCost = () => cost !== null;
 
 	const calculateCost = (Cw: number, Cs: number): number => {
 		const params: CostParams = {
-			Lq: table!.Lq!,
-			s: table!.s!,
+			Lq: props.table!.Lq!,
+			s: props.table!.s!,
 			Cw,
 			Cs,
 		}
 		console.log("params", params);
 		return getCost(params);
 	}
+
+	useEffect(() => {
+		setCost(null);
+	}, [props.table])
 
 	const handleOnClick = () => {
 
@@ -78,7 +83,7 @@ const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
 			return;
 		}
 
-		if (table.Lq === undefined || table.s === undefined) {
+		if (props.table.Lq === undefined || props.table.s === undefined) {
 			console.log("missing params: Lq or s")   // TOFIX
 			return;
 		};
@@ -93,7 +98,7 @@ const ResultsAndCost: React.FC<Props> = ({ table, modelName }) => {
 			<p style={{ fontSize: 16 }}>Long term averages according to queue system model parameters</p>
 			{
 				hasResults() &&
-				<TableSwitch data={table!} modelName={modelName} />
+				<TableSwitch data={props.table!} modelName={props.modelName} />
 			}
 			<div style={centered}>
 				<Stack spacing={2} className="formStack">

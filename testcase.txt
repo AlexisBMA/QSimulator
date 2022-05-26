@@ -1,0 +1,162 @@
+>>> MM1
+
+- Input 1:
+llegadas= 161
+servicios= 162
+Cs= $ 101
+Cw= $ 120 
+
+- Output 1:
+L=161
+Lq=160.00617
+W=1
+Wq=0.993827
+Costo= $ 19301.74
+...
+
+- Input 2:
+llegadas= 100
+servicios= 300
+Cs= $ 101
+Cw= $ 120 
+
+- Output 2:
+L=0.5
+Lq=0.1666
+W=0.005
+Wq=0.001666
+Costo= $ 121
+
+
+>>> MMs
+- Input 3:
+servidores= 111
+llegadas= 161
+servicios= 162
+Cs= $ 50
+Cw= $ 1 
+
+- Output 3:
+L= 0.5783674387227344
+Lq= 6.739407832675313e-2
+W= 0.000004684806236414062
+Wq= 5.458955281780807e-215
+Costo= $ 5550
+...
+
+
+
+>>> MMsK
+- Input 4:
+servidores= 34
+llegadas= 12345
+servicios= 21345
+k = 2000000
+Cs= $ 299999
+Cw= $ 299999
+
+- Output 4:
+L= 0.578355586788475
+Lq= 7.122608111132552e-50
+W= 0.00004684937924572499
+Wq= 5.769629899661848e-54
+Costo= $ 10199966
+...
+
+
+- Input 5:
+servidores= 34
+llegadas= 12345
+servicios= 12400
+k = 2000000
+Cs= $ 1
+Cw= $ 10
+
+- Output 5:
+L= 0.9955645161290323
+Lq= 8.668922375052291e-42
+W= 0.00008064516129032258
+Wq= 7.02221334552636e-46
+Costo= $ 34
+...
+
+
+
+>>> MG1
+- Input 6:
+llegadas= 13
+servicios= 14
+sigma = 0.99
+Cs= $ 101
+Cw= $ 120
+
+- Output 6:
+L= 1166.4225857142862
+Lq= 1165.494014285715
+W= 89.72481428571433
+Wq= 89.65338571428576
+Costo= $ 139960.28171428578
+...
+
+- Input 7:
+llegadas= 161
+servicios= 162
+sigma = 0
+Cs= $ 101
+Cw= $ 120
+
+- Output 7:
+L= 80.99691358024656
+Lq= 80.00308641975273
+W= 0.5030864197530842
+Wq= 0.4969135802469114
+Costo= $ 9701.370370370329
+
+
+
+>>> MD1
+- Input 8:
+llegadas= 2
+servicios= 3
+Cs: $ 1
+Cw: $ 1
+
+- Output 8:
+L= 0.75
+Lq= 0.08333
+W= 0.375
+Wq= 0.0416666
+Costo= $ 1.08333
+
+
+>>> ME1
+- Input 9:
+llegadas= 2
+servicios= 3
+Ek: 1
+
+Cs: $ 2
+Cw: $ 2
+
+- Output 9:
+L= 2
+Lq= 1.33333
+W= 1
+Wq= 0.6666
+Costo= $ 4.6666
+...
+
+- Input 10:
+llegadas= 25
+servicios= 30
+Ek: 5
+
+Cs: $ 1
+Cw: $ 1
+
+- Output 10:
+L= 3.333
+Lq= 2.5
+W= 0.13333
+Wq= 0.1
+Costo= $ 3.5

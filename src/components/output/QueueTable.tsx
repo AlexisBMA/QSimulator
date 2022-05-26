@@ -54,7 +54,7 @@ const TestTable: React.FC<Props> = ({ table, modelName }) => {
                             }}
                         />
                     ))}
-                        <CSVLink
+                        {/* <CSVLink
                             data={csvData}
                             filename={`${modelName}_simulation.csv`}
                             style={{ textDecoration: 'none' }}
@@ -62,7 +62,7 @@ const TestTable: React.FC<Props> = ({ table, modelName }) => {
                             <Button disabled variant='outlined' fullWidth>
                                 Exportar a CSV
                             </Button>
-                        </CSVLink>
+                        </CSVLink> */}
                 </Stack>
 
 
