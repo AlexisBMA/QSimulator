@@ -15,8 +15,8 @@ type Props = {
 const queueTableLabels = {
     L: 'Average users in system (L)',
     Lq: 'Average users in queue (Lq)',
-    W: 'Average user time in system (W)',
-    Wq: 'Average user time in queue (Wq)',
+    W: 'Average time in system (W)',
+    Wq: 'Average time in queue (Wq)',
 }
 
 

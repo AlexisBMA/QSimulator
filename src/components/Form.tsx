@@ -1,7 +1,6 @@
 import React, { ChangeEventHandler, useState, useEffect } from 'react'
 import { Alert, Button, TextField, Stack, Select, MenuItem } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select'
-import { validateNumeric, paramsToIntegers, isInteger } from '../utils'
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 
 import { MODELS } from '../stats/models'
@@ -31,7 +30,7 @@ const Form: React.FC<Props> = ({
 
 	const [maxUsers, setMaxUsers] = useState<string>("");
 	const [stDev, setStDev] = useState<string>("0.0");
-	const [kDev, setKDev] = useState<string>("0");
+	const [kDev, setKDev] = useState<string>("1");
 
 	const [disableNumServers, setDisableNumServers] = useState<boolean>(true);
 	const [needsKParam, setNeedsKParam] = useState<boolean>(false);
@@ -107,7 +106,7 @@ const Form: React.FC<Props> = ({
 		k = Number(kDev);
 
 		// NaN checks
-		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || needsKParam && Number.isNaN(maxClientes) || needsKDev && Number.isNaN(kDev)) {
+		if (Number.isNaN(tasaLlegadas) || Number.isNaN(tasaServicios) || (needsKParam && Number.isNaN(maxClientes)) || (needsKDev && Number.isNaN(kDev))) {
 			setError("Inputs must be numeric");
 			console.log("non-number inputs");
 			return;
@@ -150,7 +149,7 @@ const Form: React.FC<Props> = ({
 			return;
 		}
 		if (servidores > 170){
-			setError("The max value for servers is 170")
+			setError("Maximum value for servers is 170")
 		}
 
 		// MMsk check
@@ -178,7 +177,7 @@ const Form: React.FC<Props> = ({
 			return;
 		}
 
-		console.log("Results:")
+		// console.log("Results");
 		let params = {
 			tasaLlegadas,
 			tasaServicios,
@@ -187,9 +186,7 @@ const Form: React.FC<Props> = ({
 			sigma,
 			k
 		}
-		console.log(params)
 		let ans: QueueingTable = MODELS[model](params);
-		console.log(ans)
 		updateResult(ans);
 	}
 

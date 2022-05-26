@@ -23,6 +23,7 @@ const MMsK : QueueingFunc = (params: MMsKParams) => {
     results.W = results.Wq + (1/results.mu)
     results.L = results.lambdaE * results.W
     results.tasaUtil = 1 - results.p0
+    results.p = results.rho
     return results
 }
 
