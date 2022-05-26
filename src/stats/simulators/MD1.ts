@@ -1,7 +1,7 @@
 import { QueueingFunc,QueueingTable } from "../../types";
 
-// lambda = tasaLlegadas
-// nu = tasaServicios
+// CHECKED
+
 interface MD1Params {
     tasaLlegadas: number,
     tasaServicios: number
