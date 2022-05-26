@@ -9,6 +9,8 @@ interface MM1Params {
 }
 
 const MM1 : QueueingFunc = (params: MM1Params) => {
+    console.log("MM1");
+    console.log(params);
     let results: QueueingTable = {}
     results.lambda = params.tasaLlegadas
     results.mu = params.tasaServicios
@@ -19,6 +21,8 @@ const MM1 : QueueingFunc = (params: MM1Params) => {
     results.Wq = results.Lq / params.tasaLlegadas
     results.W = results.L / params.tasaLlegadas
     results.s = params.servidores 
+    console.log("results");
+    console.log(results);
     return results   
 }
 

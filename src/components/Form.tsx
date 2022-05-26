@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Alert, Button, TextField, Stack, Select, MenuItem, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select'
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
-
+import {toHourlyRate} from '../utils'
 import { MODELS } from '../stats/models'
 import { QueueModels } from '../QueueModels'
 import { QueueingTable, QueueModelFormInputs } from '../types'
@@ -34,6 +34,7 @@ const Form: React.FC<Props> = ({
 	const [stDev, setStDev] = useState<string>("0.0");
 	const [kDev, setKDev] = useState<string>("1");
 
+	const [disableSubmit, setDisableSubmit] = useState<boolean>(false);
 	const [disableNumServers, setDisableNumServers] = useState<boolean>(true);
 	const [needsKParam, setNeedsKParam] = useState<boolean>(false);
 	const [needsStDev, setNeedsStDev] = useState<boolean>(false);
@@ -48,7 +49,8 @@ const Form: React.FC<Props> = ({
 		} else {
 			setCompleteForm(false);
 		}
-	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev])
+		setDisableSubmit(false);
+	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev, useMinutes])
 
 	// On 'model' change
 	useEffect(() => {
@@ -84,6 +86,7 @@ const Form: React.FC<Props> = ({
 	}
 
 	const onSubmit = (): void => {
+		setDisableSubmit(true);
 		setError("");
 		const servidores = Number(numberServers);
 
@@ -112,6 +115,14 @@ const Form: React.FC<Props> = ({
 			setError("Inputs must be numeric");
 			console.log("non-number inputs");
 			return;
+		}
+
+		// Use Per-Minute rates
+		if (useMinutes) {
+			tasaLlegadas = toHourlyRate(tasaLlegadas);
+			tasaServicios = toHourlyRate(tasaServicios);
+			console.log("To hours:", tasaLlegadas);
+			console.log("To hours:", tasaServicios);
 		}
 
 		// Non-zero checks
@@ -267,7 +278,7 @@ const Form: React.FC<Props> = ({
 
 			{/* Submit Button */}
 			<div className="buttonContainer">
-				<Button disabled={!completeForm} variant="contained" size="large" onClick={onSubmit}>Compute Characteristics</Button>
+				<Button disabled={!completeForm || disableSubmit} variant="contained" size="large" onClick={onSubmit}>Compute Characteristics</Button>
 			</div>
 		</div>
 	)
@@ -280,10 +291,6 @@ const completeParams = (params: QueueModelFormInputs, model: string) => {
 		return true;
 	}
 	return MODEL_PARAMS_CHECKS[model](params);
-}
-
-const toHourlyRate = (minuteRate:number) : number => {
-	return minuteRate * 60;
 }
 
 

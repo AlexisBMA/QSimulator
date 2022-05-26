@@ -79,41 +79,11 @@ export const formatNum = (x:number, d:number): number => {
     return Math.floor(x * factor) / factor
 }
 
-const csvHeaders: Record<string, Record<string,string>> = {
-    chi: {
-        'classStart': 'Inicio',
-        'classEnd':'Fin',
-        'classLength':'Longitud',
-        'observedFrequencies':'FOᵢ',
-        'expectedFrequencies':'FEᵢ',
-        'differential':'Desvío'
-    },
-    kol: {
-        'Fx':'F(x) = i/N',
-        'Ri':'S(x) = Ri',
-        'Dplus':'D+',
-        'Dminus':'D-'
-    }
+
+export const toHourlyRate = (minuteRate:number) : number => {
+	return minuteRate * 60;
 }
 
-
-/* export const tableToCSVData = (table: ChiSquaredTable | KolSmiTable) : Data => {
-    let data : Data = []
-    let test = 'Ri' in table ? 'kol' : 'chi';
-    let N = test==='kol' ? table.N! : (table as ChiSquaredTable).k!;
-
-    let columns : string[] = Object.keys(table).filter(key => Array.isArray((table as any)[key]))
-    console.log("Columns:", columns);
-
-    for (let i=0; i<N; i++) {
-        let row : Record<string, number> = {}
-
-        columns.forEach(key => {
-            row[csvHeaders[test][key]] = (table as any)[key][i];
-        })
-        
-        data.push(row);
-    }
-
-    return data;
-} */
+export const toMinutes = (hours:number) : number => {
+    return hours * 60;
+}
