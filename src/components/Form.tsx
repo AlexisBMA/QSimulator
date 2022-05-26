@@ -126,6 +126,22 @@ const Form: React.FC<Props> = ({
 			setError("Service Rate must be greater than zero");
 			return;
 		}
+		if( needsKParam && maxClientes <= 0) {
+			setError("Max number must be greater than zero");
+			return;
+		}
+		if( needsKParam && maxClientes < servidores) {
+			setError("Max number must be greater than or equal to number of servers");
+			return;
+		}
+		if( needsKDev && k <= 0) {
+			setError("K must be greater than zero");
+			return;
+		}
+		if( needsStDev && sigma < 0) {
+			setError("sigma must be equal or  greater than zero");
+			return;
+		}
 		// Stable System
 		if (tasaServicios <= tasaLlegadas) {
 			console.log("tasa", tasaServicios, "tasaLlegadas", tasaLlegadas)
