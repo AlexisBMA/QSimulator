@@ -1,11 +1,11 @@
-import React, { ChangeEventHandler, useState, useEffect } from 'react'
-import { Alert, Button, TextField, Stack, Select, MenuItem } from '@mui/material'
+import React, { useState, useEffect } from 'react'
+import { Alert, Button, TextField, Stack, Select, MenuItem, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select'
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
-
+import {toHourlyRate} from '../utils'
 import { MODELS } from '../stats/models'
 import { QueueModels } from '../QueueModels'
-import {  QueueingTable, QueueModelFormInputs } from '../types'
+import { QueueingTable, QueueModelFormInputs } from '../types'
 import { MODEL_PARAMS_CHECKS } from '../stats/models'
 
 interface Props {
@@ -28,10 +28,13 @@ const Form: React.FC<Props> = ({
 	const [arrivalRate, setArrivalRate] = useState<string>("1");
 	const [serviceRate, setServiceRate] = useState<string>("2");
 
+	const [useMinutes, setUseMinutes] = useState<boolean>(false);
+
 	const [maxUsers, setMaxUsers] = useState<string>("");
 	const [stDev, setStDev] = useState<string>("0.0");
 	const [kDev, setKDev] = useState<string>("1");
 
+	const [disableSubmit, setDisableSubmit] = useState<boolean>(false);
 	const [disableNumServers, setDisableNumServers] = useState<boolean>(true);
 	const [needsKParam, setNeedsKParam] = useState<boolean>(false);
 	const [needsStDev, setNeedsStDev] = useState<boolean>(false);
@@ -41,12 +44,13 @@ const Form: React.FC<Props> = ({
 
 	// Check form completeness according to model
 	useEffect(() => {          // completeForm updater
-		if (model !== "" && completeParams({ numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev}, model)) {
+		if (model !== "" && completeParams({ numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev }, model)) {
 			setCompleteForm(true);
 		} else {
 			setCompleteForm(false);
 		}
-	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev])
+		setDisableSubmit(false);
+	}, [numberServers, arrivalRate, serviceRate, maxUsers, stDev, kDev, useMinutes])
 
 	// On 'model' change
 	useEffect(() => {
@@ -82,6 +86,7 @@ const Form: React.FC<Props> = ({
 	}
 
 	const onSubmit = (): void => {
+		setDisableSubmit(true);
 		setError("");
 		const servidores = Number(numberServers);
 
@@ -112,6 +117,14 @@ const Form: React.FC<Props> = ({
 			return;
 		}
 
+		// Use Per-Minute rates
+		if (useMinutes) {
+			tasaLlegadas = toHourlyRate(tasaLlegadas);
+			tasaServicios = toHourlyRate(tasaServicios);
+			console.log("To hours:", tasaLlegadas);
+			console.log("To hours:", tasaServicios);
+		}
+
 		// Non-zero checks
 		if (servidores <= 0) {
 			setError("Number of Servers must be greater than zero");
@@ -125,19 +138,19 @@ const Form: React.FC<Props> = ({
 			setError("Service Rate must be greater than zero");
 			return;
 		}
-		if( needsKParam && maxClientes <= 0) {
+		if (needsKParam && maxClientes <= 0) {
 			setError("Max number must be greater than zero");
 			return;
 		}
-		if( needsKParam && maxClientes < servidores) {
+		if (needsKParam && maxClientes < servidores) {
 			setError("Max number must be greater than or equal to number of servers");
 			return;
 		}
-		if( needsKDev && k <= 0) {
+		if (needsKDev && k <= 0) {
 			setError("K must be greater than zero");
 			return;
 		}
-		if( needsStDev && sigma < 0) {
+		if (needsStDev && sigma < 0) {
 			setError("sigma must be equal or  greater than zero");
 			return;
 		}
@@ -148,7 +161,7 @@ const Form: React.FC<Props> = ({
 			console.log("unstable system inputs");
 			return;
 		}
-		if (servidores > 170){
+		if (servidores > 170) {
 			setError("Maximum value for servers is 170")
 		}
 
@@ -190,6 +203,13 @@ const Form: React.FC<Props> = ({
 		updateResult(ans);
 	}
 
+	const toggleUseMinutes = (event: React.ChangeEvent<HTMLInputElement>) => {
+		console.log("event checked", event.target.checked)
+		setUseMinutes(event.target.checked)
+	}
+
+	const rateType = useMinutes ? 'per-minute' : 'hourly';
+
 	return (
 		<div className="formContainer">
 			<Stack spacing={2} className="formStack">
@@ -213,15 +233,23 @@ const Form: React.FC<Props> = ({
 					<MenuItem value={QueueModels.ME1}>M/E/1</MenuItem>
 
 				</Select>
+				{/* Common Inputs */}
+
 				<TextField type="number" label="No. of Servers" variant="filled" disabled={disableNumServers}
 					value={numberServers}
 					onChange={(e) => setNumberServers(e.target.value)}></TextField>
-				<TextField type="number" label="Arrival Rate (hourly)" variant="filled"
+				<TextField type="number" label={`Arrival Rate (${rateType})`} variant="filled"
 					value={arrivalRate}
 					onChange={(e) => setArrivalRate(e.target.value)}></TextField>
-				<TextField type="number" label="Service Rate (hourly)" variant="filled"
+				<TextField type="number" label={`Service Rate (${rateType})`} variant="filled"
 					value={serviceRate}
 					onChange={(e) => setServiceRate(e.target.value)}></TextField>
+
+				<FormGroup>
+					<FormControlLabel 
+					control={<Checkbox checked={useMinutes} onChange={toggleUseMinutes} />} 
+					label="Use Per-Minute rates" />
+				</FormGroup>
 
 				{/* Captures extra params: */}
 				{
@@ -250,7 +278,7 @@ const Form: React.FC<Props> = ({
 
 			{/* Submit Button */}
 			<div className="buttonContainer">
-				<Button disabled={!completeForm} variant="contained" size="large" onClick={onSubmit}>Compute Characteristics</Button>
+				<Button disabled={!completeForm || disableSubmit} variant="contained" size="large" onClick={onSubmit}>Compute Characteristics</Button>
 			</div>
 		</div>
 	)
